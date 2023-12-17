@@ -1,4 +1,4 @@
-# 1. 💰 [Kinza finace Ardop](https://app.kinza.finance/#/referral?referralCode=UHZOJK)
+# 1. 💰 [Kinza finance Ardop](https://app.kinza.finance/#/referral?referralCode=UHZOJK)
 
 * [Kinza Finance Airdrop and Referral Program](https://docs.kinza.finance/introduction/airdrop)
 
