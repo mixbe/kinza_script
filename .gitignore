@@ -1,0 +1,5 @@
+.idea
+.env
+*.csv
+accounts/*
+**/__pycache__
