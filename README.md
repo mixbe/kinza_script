@@ -1,9 +1,8 @@
-# 1. [Kinza finace Ardop](https://app.kinza.finance/#/referral?referralCode=UHZOJK) 
+# 1. 💰 [Kinza finace Ardop](https://app.kinza.finance/#/referral?referralCode=UHZOJK)
 
 * [Kinza Finance Airdrop and Referral Program](https://docs.kinza.finance/introduction/airdrop)
 
-
-# 2. What is Kiaaz
+# 2.  What is Kiaaz ？
 
 A reliable lending protocol is core to a solid DeFi ecosystem. 
 
@@ -12,13 +11,13 @@ Kinza focuses on security relentlessly, and aims to connect demand and supply of
 We design a unique tokenomics inspired from Solidly’s ve(3, 3). Get ready for a KINZA War.
 
 
-# 3. Fautres
+# 3. ⚡️ Fautres
 
 - [x] 1. Login  & Referees
 - [x] 2. Supply liquidity
 - [x] 3. Withdraw liquidity
 
-# 4. Usage
+# 4. ✔️ Usage
 
 ## 4.0 Preparation (if you are ready, ignore this step)
 
@@ -53,3 +52,7 @@ python 2_supply.py
 ```bash
 python 3_withdraw.py
 ```
+
+
+## 📧 Contacts
++ Twitter - [@mixbeefan](https://twitter.com/mixbeefan)
