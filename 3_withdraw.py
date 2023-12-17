@@ -4,9 +4,10 @@ import time
 
 from dotenv import dotenv_values
 from eth_account import Account
+from eth_account.messages import encode_structured_data
 from eth_account.signers.local import LocalAccount
+from hexbytes import HexBytes
 from web3 import Web3
-from utils.contract_helpers import build_permit_params, get_signature_from_typed_data
 
 config = dotenv_values(".env")
 
@@ -27,6 +28,46 @@ def get_erc20_instance(w3, address):
     with open('abi/ERC20.abi', 'r') as file:
         erc20_abi = json.load(file)
     return w3.eth.contract(address=address, abi=erc20_abi)
+
+
+def build_permit_params(chain_id, token, revision, token_name, owner, spender, nonce, deadline, value):
+    return {
+        'types': {
+            'EIP712Domain': [
+                {'name': 'name', 'type': 'string'},
+                {'name': 'version', 'type': 'string'},
+                {'name': 'chainId', 'type': 'uint256'},
+                {'name': 'verifyingContract', 'type': 'address'},
+            ],
+            'Permit': [
+                {'name': 'owner', 'type': 'address'},
+                {'name': 'spender', 'type': 'address'},
+                {'name': 'value', 'type': 'uint256'},
+                {'name': 'nonce', 'type': 'uint256'},
+                {'name': 'deadline', 'type': 'uint256'},
+            ],
+        },
+        'primaryType': 'Permit',
+        'domain': {
+            'name': token_name,
+            'version': revision,
+            'chainId': chain_id,
+            'verifyingContract': token,
+        },
+        'message': {
+            'owner': owner,
+            'spender': spender,
+            'value': value,
+            'nonce': nonce,
+            'deadline': deadline,
+        },
+    }
+
+
+def get_signature_from_typed_data(private_key, typed_data):
+    signable_msg_from_dict = encode_structured_data(typed_data)
+    signature_vrs = Account.sign_message(signable_msg_from_dict, private_key)
+    return signature_vrs
 
 
 if __name__ == '__main__':
@@ -62,21 +103,24 @@ if __name__ == '__main__':
     with open('abi/WrappedTokenGatewayV3.abi', 'r') as file:
         gatewayv3_abi = json.load(file)
 
-        tx = web3.eth.contract(address=GATEWAY_V3, abi=gatewayv3_abi).functions.withdrawETHWithPermit(
+        functions = web3.eth.contract(address=GATEWAY_V3, abi=gatewayv3_abi).functions
+        tx = functions.withdrawETHWithPermit(
             LP_TOKEN,
             balance,
             account.address,
             EXPIRY_TIMESTAMP,
             signature_vrs.v,
-            hex(signature_vrs.r),
-            hex(signature_vrs.s)
+            HexBytes(signature_vrs.r),
+            HexBytes(signature_vrs.s)
         ).build_transaction({
             'from': Web3.to_checksum_address(account.address),
             'nonce': web3.eth.get_transaction_count(Web3.to_checksum_address(account.address)),
             'gasPrice': web3.eth.gas_price,
             'value': 0
         })
-        tx_create = web3.eth.account.sign_transaction(tx, PRIVATE_KEY)
-        tx_hash = web3.eth.send_raw_transaction(tx_create.rawTransaction)
-        tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
-        print(f"Tx successful with hash: {tx_receipt.transactionHash.hex()}")
+
+    tx['gas'] = web3.eth.estimate_gas(tx)
+    tx_create = web3.eth.account.sign_transaction(tx, PRIVATE_KEY)
+    tx_hash = web3.eth.send_raw_transaction(tx_create.rawTransaction)
+    tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
+    print(f"Tx successful with hash: {tx_receipt.transactionHash.hex()}")
